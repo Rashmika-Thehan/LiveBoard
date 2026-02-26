@@ -1,7 +1,7 @@
 import express from 'express';
 import { eq } from 'drizzle-orm';
-import { db, pool } from './db.js';
-import { demoUsers } from './schema.js';
+import { db, pool } from './db/db.js';
+import { demoUsers } from './db/schema.js';
 
 const app = express();
 const PORT = 8000;
