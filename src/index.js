@@ -2,6 +2,7 @@ import express from 'express';
 import { matchRouter } from './routes/matches.js';
 import http from 'http';
 import { attachWebSocketServer } from './ws/server.js';
+import { securityMiddleware } from './arcjet.js';
 
 //! boots up both an HTTP server and a WebSocket server on the same port.
 const PORT = process.env.PORT || 8000;
@@ -11,7 +12,7 @@ const app = express();
 const server = http.createServer(app);  // WebSockets can't attach to an Express app directly — they need the raw Node.js HTTP server.
 
 app.use(express.json());
-
+app.use(securityMiddleware()); // Apply Arcjet security middleware to all HTTP routes
 app.use('/matches', matchRouter);
 
 const { broadcastMatchCreated } = attachWebSocketServer(server);

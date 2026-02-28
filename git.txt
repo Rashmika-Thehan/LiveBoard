@@ -1,0 +1,10 @@
+git checkout -b feat/websocket-server
+git add .
+git commit -m "Implement the websocket server"
+git push
+git push --set-upstream origin feat/websocket-server
+
+// After the git PR and branch merge
+
+git checkout main
+git pull
