@@ -1,8 +1,8 @@
 import express from 'express';
-import { createMatchSchema, listMatchesQuerySchema } from '../src/validation/matches.js';
-import { getMatchStatus } from '../src/utils/match-status.js';
-import { db } from '../src/db/db.js';
-import { matches } from '../src/db/schema.js';
+import { createMatchSchema, listMatchesQuerySchema } from '../validation/matches.js';
+import { getMatchStatus } from '../utils/match-status.js';
+import { db } from '../db/db.js';
+import { matches } from '../db/schema.js';
 import { desc } from 'drizzle-orm';
 
 export const matchRouter = express.Router();
@@ -11,7 +11,7 @@ const MAX_LIMIT = 100;
 matchRouter.get('/', async (req, res) => {
     const parsed = listMatchesQuerySchema.safeParse(req.query);
     if(!parsed.success) {
-        return res.status(400).json({ error: "Invalid query parameters", details: JSON.stringify(parsed.error)});
+        return res.status(400).json({ error: "Invalid query parameters", details: parsed.error.issues});
     }
 
     const limit = Math.min(parsed.data.limit ?? 50, MAX_LIMIT);
@@ -30,7 +30,7 @@ matchRouter.get('/', async (req, res) => {
 matchRouter.post('/', async (req, res) => {
     const parsed = createMatchSchema.safeParse(req.body);
     if (!parsed.success) {
-        return res.status(400).json({ errors: "Invalid Match data", details: parsed.error.flatten() });
+        return res.status(400).json({ error: "Invalid Match data", details: parsed.error.issues });
     }
     const { startTime, endTime, homeScore, awayScore } = parsed.data;
     try{
@@ -42,6 +42,16 @@ matchRouter.post('/', async (req, res) => {
                 awayScore: awayScore ?? 0,
                 status: getMatchStatus(startTime, endTime),
              }).returning();
+
+            const broadcastMatchCreated = res.app.locals.broadcastMatchCreated;
+            if (typeof broadcastMatchCreated === 'function') {
+                try {
+                    broadcastMatchCreated(event);
+                } catch (broadcastError) {
+                    console.error('Failed to broadcast matchCreated', broadcastError);
+                }
+            }
+             
         res.status(201).json({ data: event });
 
     } catch (e){
