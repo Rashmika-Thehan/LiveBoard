@@ -145,3 +145,5 @@ vite.config.ts.timestamp-*
 
 git.txt
 api_test.txt
+arcjet_ws-test.js
+arcjet_http-test.js
