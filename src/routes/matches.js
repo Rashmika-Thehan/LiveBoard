@@ -30,7 +30,7 @@ matchRouter.get('/', async (req, res) => {
 matchRouter.post('/', async (req, res) => {
     const parsed = createMatchSchema.safeParse(req.body);
     if (!parsed.success) {
-        return res.status(400).json({ errors: "Invalid Match data", details: parsed.error.issues });
+        return res.status(400).json({ error: "Invalid Match data", details: parsed.error.issues });
     }
     const { startTime, endTime, homeScore, awayScore } = parsed.data;
     try{
