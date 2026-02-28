@@ -56,6 +56,6 @@ export const createMatchSchema = z.object({
 // Update score schema:
 // - requires homeScore and awayScore as coerced non-negative integers
 export const updateScoreSchema = z.object({
-homeScore: z.coerce.number().int().min(0),
-awayScore: z.coerce.number().int().min(0),
+    homeScore: z.coerce.number().int().min(0),
+    awayScore: z.coerce.number().int().min(0),
 });

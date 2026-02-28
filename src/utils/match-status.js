@@ -5,7 +5,7 @@ export function getMatchStatus(startTime, endTime, now = new Date()) {
     const end = new Date(endTime);
 
     if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-        return null;
+        return MATCH_STATUS.SCHEDULED;
     }
 
     if (now < start) {
