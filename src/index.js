@@ -3,6 +3,7 @@ import { matchRouter } from './routes/matches.js';
 import http from 'http';
 import { attachWebSocketServer } from './ws/server.js';
 import { securityMiddleware } from './arcjet.js';
+import { commentaryRouter } from './routes/commentary.js';
 
 //! boots up both an HTTP server and a WebSocket server on the same port.
 const PORT = process.env.PORT || 8000;
@@ -14,9 +15,11 @@ const server = http.createServer(app);  // WebSockets can't attach to an Express
 app.use(express.json());
 app.use(securityMiddleware()); // Apply Arcjet security middleware to all HTTP routes
 app.use('/matches', matchRouter);
+app.use('/matches/:id/commentary', commentaryRouter);
 
-const { broadcastMatchCreated } = attachWebSocketServer(server);
+const { broadcastMatchCreated, broadcastCommentary } = attachWebSocketServer(server);
 app.locals.broadcastMatchCreated = broadcastMatchCreated;
+app.locals.broadcastCommentary = broadcastCommentary;
 
 server.listen(PORT, HOST, () => {
   const baseurl = HOST === '0.0.0.0' ? `http://localhost:${PORT}` : `http://${HOST}:${PORT}`;
